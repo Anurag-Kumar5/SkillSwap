@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title>Reviews - SkillSwap</title>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container text-center position-relative">
+      <h1 class="hero-title">⭐ Reviews</h1>
+      <p class="hero-subtitle">See what others say about their skill swap experiences</p>
+    </div>
+  </section>
+
+  <main class="container py-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card feature-card hover-float fade-in">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0 text-gradient">
+              <i class="bi bi-star me-2"></i>Recent Reviews
+            </h5>
+            <span class="badge bg-primary"><%= reviews.length %> reviews</span>
+          </div>
+          <div class="card-body">
+            <% if (reviews.length > 0) { %>
+              <div class="row g-4">
+                <% reviews.forEach(review => { %>
+                  <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-body">
+                        <div class="d-flex align-items-start gap-3">
+                          <img src="<%= review.reviewer.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(review.reviewer.name) %>" 
+                               width="50" height="50" class="rounded-circle"
+                               onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(review.reviewer.name) %>'">
+                          <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                              <div>
+                                <h6 class="mb-1"><%= review.reviewer.name %></h6>
+                                <div class="rating mb-2">
+                                  <% for (let i = 1; i <= 5; i++) { %>
+                                    <i class="bi bi-star<%= i <= review.rating ? '-fill' : '' %> text-warning"></i>
+                                  <% } %>
+                                </div>
+                              </div>
+                              <small class="text-muted">
+                                <%= new Date(review.createdAt).toLocaleDateString() %>
+                              </small>
+                            </div>
+                            <% if (review.comment) { %>
+                              <p class="mb-0"><%= review.comment %></p>
+                            <% } %>
+                            <div class="mt-2">
+                              <small class="text-muted">
+                                <i class="bi bi-arrow-left-right me-1"></i>
+                                Swapped with <%= review.reviewee.name %>
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <div class="empty-state">
+                <i class="bi bi-star"></i>
+                <h5>No Reviews Yet</h5>
+                <p>Be the first to leave a review after completing a swap!</p>
+                <a href="/swaps" class="btn btn-primary">
+                  <i class="bi bi-arrow-left-right me-2"></i>View Your Swaps
+                </a>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

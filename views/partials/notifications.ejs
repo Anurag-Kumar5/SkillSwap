@@ -1,0 +1,15 @@
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="swapToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">New Swap Request!</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      <p id="swapMessage"></p>
+      <div class="mt-2 pt-2 border-top">
+        <button class="btn btn-success btn-sm" onclick="handleSwapResponse(true)">Accept</button>
+        <button class="btn btn-danger btn-sm ms-2" onclick="handleSwapResponse(false)">Reject</button>
+      </div>
+    </div>
+  </div>
+</div>

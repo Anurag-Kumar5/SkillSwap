@@ -1,0 +1,242 @@
+<!-- views/skills/list.ejs -->
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Available Skills</h2>
+    <a href="/skills/add" class="btn btn-success">
+      <i class="bi bi-plus-circle"></i> Add New Skill
+    </a>
+  </div>
+
+  <!-- Flash Messages -->
+  <% if (messages.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show">
+      <%= messages.error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (messages.success) { %>
+    <div class="alert alert-success alert-dismissible fade show">
+      <%= messages.success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <% if (skills.length === 0) { %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i> No skills available yet. Be the first to add one!
+    </div>
+  <% } else { %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% skills.forEach(skill => { %>
+        <!-- Debug Info (can be removed after testing) -->
+        <div class="alert alert-warning">
+          <h5>Debug Info for Skill: <%= skill.name %></h5>
+          <p><strong>Logged-in User:</strong> <%= user ? user._id : 'NOT LOGGED IN' %></p>
+          <p><strong>Skill Owner:</strong> <%= skill.user ? skill.user._id : 'NO OWNER POPULATED' %></p>
+          <p><strong>Is Owner:</strong> 
+            <%= user && skill.user ? user._id.toString() === skill.user._id.toString() : 'FALSE' %>
+          </p>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0"><%= skill.name %></h5>
+                <span class="badge rounded-pill bg-<%= 
+                  skill.category === 'Tech' ? 'primary' : 
+                  skill.category === 'Music' ? 'success' :
+                  skill.category === 'Art' ? 'warning' : 
+                  skill.category === 'Language' ? 'info' : 'secondary'
+                %>">
+                  <%= skill.category %>
+                </span>
+              </div>
+              
+              <% if (skill.description) { %>
+                <p class="card-text text-muted flex-grow-1">
+                  <small><%= skill.description %></small>
+                </p>
+              <% } %>
+
+              <div class="mt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="badge bg-light text-dark">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <%= skill.proficiency || 'Beginner' %> level
+                    </span>
+                    <small class="text-muted d-block mt-1">
+                      <i class="bi bi-person"></i> 
+                      <%= skill.user ? skill.user.name : 'Unknown User' %>
+                    </small>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <% if (user && skill.user && user._id.toString() === skill.user._id.toString()) { %>
+                    <!-- Owner Actions -->
+                    <div class="btn-group btn-group-sm">
+                      <a href="/skills/<%= skill._id %>/edit" 
+                         class="btn btn-outline-primary"
+                         title="Edit Skill">
+                        <i class="bi bi-pencil"></i> Edit
+                      </a>
+                      <button class="btn btn-outline-danger" 
+                              title="Delete Skill"
+                              data-bs-toggle="modal" 
+                              data-bs-target="#deleteModal<%= skill._id %>">
+                        <i class="bi bi-trash"></i> Delete
+                      </button>
+                    </div>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal<%= skill._id %>" tabindex="-1">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Are you sure you want to delete "<strong><%= skill.name %></strong>"?</p>
+                            <p class="text-danger small">
+                              <i class="bi bi-exclamation-triangle"></i> This cannot be undone.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="/skills/<%= skill._id %>" method="POST">
+                              <input type="hidden" name="_method" value="DELETE">
+                              <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% else if (user) { %>
+                    <!-- Non-Owner Actions -->
+                    <button class="btn btn-primary btn-sm request-swap" 
+                            data-skill-id="<%= skill._id %>"
+                            data-user-id="<%= skill.user._id %>"
+                            data-skill-name="<%= skill.name %>">
+                      <i class="bi bi-arrow-left-right"></i> Request Swap
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Swap Modal (include this at the bottom of the file) -->
+<div class="modal fade" id="swapModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Request Skill Swap</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="swapForm">
+          <input type="hidden" name="recipientId" id="recipientId">
+          <input type="hidden" name="skillRequestedId" id="skillRequestedId">
+          
+          <div class="mb-3">
+            <label class="form-label">You want to learn:</label>
+            <p class="form-control-plaintext fw-bold" id="requestedSkillDisplay"></p>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Select a skill to offer:</label>
+            <select class="form-select" name="skillOfferedId" required>
+              <option value="">-- Select your skill --</option>
+              <!-- Will be populated by JavaScript -->
+            </select>
+          </div>
+          
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-send"></i> Send Request
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Swap Functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle swap button clicks
+  document.querySelectorAll('.request-swap').forEach(button => {
+    button.addEventListener('click', function() {
+      const skillId = this.dataset.skillId;
+      const userId = this.dataset.userId;
+      const skillName = this.dataset.skillName;
+      
+      // Set the hidden fields
+      document.getElementById('recipientId').value = userId;
+      document.getElementById('skillRequestedId').value = skillId;
+      document.getElementById('requestedSkillDisplay').textContent = skillName;
+      
+      // Fetch current user's skills
+      fetch('/auth/skills')
+        .then(response => response.json())
+        .then(skills => {
+          const select = document.querySelector('[name="skillOfferedId"]');
+          select.innerHTML = '<option value="">-- Select your skill --</option>';
+          
+          skills.forEach(skill => {
+            const option = document.createElement('option');
+            option.value = skill._id;
+            option.textContent = `${skill.name} (${skill.category})`;
+            select.appendChild(option);
+          });
+          
+          // Show the modal
+          const modal = new bootstrap.Modal(document.getElementById('swapModal'));
+          modal.show();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to load your skills');
+        });
+    });
+  });
+
+  // Handle swap form submission
+  document.getElementById('swapForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+      recipientId: document.getElementById('recipientId').value,
+      skillRequestedId: document.getElementById('skillRequestedId').value,
+      skillOfferedId: document.querySelector('[name="skillOfferedId"]').value
+    };
+
+    fetch('/api/swaps', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => {
+      if (response.ok) {
+        location.reload(); // Refresh to show the new swap
+      } else {
+        alert('Failed to create swap request');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error submitting swap request');
+    });
+  });
+});
+</script>

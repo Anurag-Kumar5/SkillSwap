@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title>Discover Skills — SkillSwap</title>
+  <meta name="description" content="Browse and discover skills from people around the world. Find your perfect skill exchange partner on SkillSwap.">
+</head>
+<body>
+  <% var query = typeof query !== 'undefined' ? query : {}; %>
+  <%- include('partials/header') %>
+
+  <main>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="/">Home</a></span>
+          <span class="breadcrumb-item active">Discover</span>
+        </div>
+        <h1 class="page-title">Discover Skills</h1>
+        <p class="page-subtitle">Find talented people offering skills you want to learn.</p>
+      </div>
+    </div>
+
+    <div class="container fade-in" style="max-width: var(--container-max); padding: var(--space-8) var(--space-6);">
+      <div class="row g-6">
+        <!-- ── Filters Sidebar ── -->
+        <div class="col-lg-3">
+          <div class="card card-flat" style="position: sticky; top: calc(var(--nav-height) + var(--space-4));">
+            <div class="card-header">
+              <i class="bi bi-sliders me-2"></i>Filters
+            </div>
+            <div class="card-body" style="padding: var(--space-4);">
+              <form method="get" action="/browse" id="filterForm">
+                <!-- Search -->
+                <div style="margin-bottom: var(--space-4);">
+                  <label class="form-label">Search</label>
+                  <div style="position: relative;">
+                    <i class="bi bi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); font-size: 0.875rem; pointer-events: none;"></i>
+                    <input type="text" name="q" id="searchInput" class="form-control"
+                           style="padding-left: 2.25rem;"
+                           placeholder="Search skills..."
+                           value="<%= typeof query !== 'undefined' && query.q ? query.q : '' %>">
+                  </div>
+                </div>
+
+                <!-- Category -->
+                <div style="margin-bottom: var(--space-4);">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" name="category" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <% categories.forEach(cat => { %>
+                      <option value="<%= cat %>" <%= (typeof query !== 'undefined' && query.category===cat) ? 'selected' : '' %>>
+                        <%= cat %>
+                      </option>
+                    <% }); %>
+                  </select>
+                </div>
+
+                <!-- Proficiency -->
+                <div style="margin-bottom: var(--space-5);">
+                  <label class="form-label">Proficiency</label>
+                  <select class="form-select" name="proficiency" id="proficiencyFilter">
+                    <option value="">All Levels</option>
+                    <option value="Beginner"     <%= (typeof query !== 'undefined' && query.proficiency==='Beginner')     ? 'selected' : '' %>>Beginner</option>
+                    <option value="Intermediate" <%= (typeof query !== 'undefined' && query.proficiency==='Intermediate') ? 'selected' : '' %>>Intermediate</option>
+                    <option value="Advanced"     <%= (typeof query !== 'undefined' && query.proficiency==='Advanced')     ? 'selected' : '' %>>Advanced</option>
+                    <option value="Expert"       <%= (typeof query !== 'undefined' && query.proficiency==='Expert')       ? 'selected' : '' %>>Expert</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                  <button class="btn btn-primary w-100" type="submit">Apply Filters</button>
+                  <a class="btn btn-outline-secondary w-100" href="/browse">Reset</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Results Grid ── -->
+        <div class="col-lg-9">
+          <!-- Results count + active filters -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5);">
+            <div style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+              <% if (skills.length > 0) { %>
+                Showing <strong style="color: var(--color-text);"><%= skills.length %></strong> skill<%= skills.length !== 1 ? 's' : '' %>
+                <% if (query.q) { %> for "<strong><%= query.q %></strong>"<% } %>
+                <% if (query.category) { %> in <span class="badge bg-primary ms-1"><%= query.category %></span><% } %>
+              <% } %>
+            </div>
+          </div>
+
+          <% if (skills.length > 0) { %>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4" id="skillsContainer">
+              <% skills.forEach(skill => { %>
+                <% if (skill.user) { %>
+                  <div class="col">
+                    <div class="user-card h-100">
+                      <!-- Card Header: User info -->
+                      <div class="user-card-header">
+                        <img src="<%= skill.user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(skill.user.name || 'U') + '&background=2563EB&color=fff&size=64' %>"
+                             class="avatar avatar-md"
+                             alt="<%= skill.user.name %>"
+                             onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(skill.user.name || 'U') %>&background=2563EB&color=fff&size=64'">
+                        <div class="user-card-meta">
+                          <div class="user-card-name"><%= skill.user.name || skill.user.username %></div>
+                          <div class="user-card-sub">
+                            <% if (skill.user.location) { %>
+                              <i class="bi bi-geo-alt"></i><%= skill.user.location %>
+                            <% } else { %>
+                              <i class="bi bi-person"></i>SkillSwap Member
+                            <% } %>
+                          </div>
+                        </div>
+                        <!-- Rating -->
+                        <div style="text-align: right; flex-shrink: 0;">
+                          <div style="display: flex; gap: 2px; color: #F59E0B; font-size: 0.75rem; justify-content: flex-end;">
+                            <% const rating = skill.user.ratings ? Math.round(skill.user.ratings.average) : 5; %>
+                            <% for(let i = 1; i <= 5; i++) { %><span><%= i <= rating ? '★' : '☆' %></span><% } %>
+                          </div>
+                          <div style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">
+                            Level <%= skill.user.level || 1 %>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Skill being offered -->
+                      <div>
+                        <div style="font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--color-text-muted); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.04em;">Offering</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: var(--space-1);">
+                          <span class="skill-chip"><%= skill.name %></span>
+                          <span class="category-chip"><%= skill.category %></span>
+                        </div>
+                        <% if (skill.proficiency) { %>
+                          <div style="margin-top: var(--space-2);">
+                            <span class="badge bg-secondary"><i class="bi bi-bar-chart me-1"></i><%= skill.proficiency %></span>
+                          </div>
+                        <% } %>
+                        <% if (skill.description) { %>
+                          <p class="user-card-bio" style="margin-top: var(--space-3);"><%= skill.description %></p>
+                        <% } %>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="user-card-footer" style="margin-top: auto;">
+                        <a href="/users/<%= skill.user._id %>" class="btn btn-outline-secondary btn-sm">
+                          View Profile
+                        </a>
+                        <% if (typeof user !== 'undefined' && user && user._id.toString() !== skill.user._id.toString()) { %>
+                          <button class="btn btn-primary btn-sm request-swap"
+                                  data-skill-id="<%= skill._id %>"
+                                  data-user-id="<%= skill.user._id %>"
+                                  data-skill-name="<%= skill.name %>">
+                            <i class="bi bi-arrow-left-right me-1"></i>Request Swap
+                          </button>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                <% } %>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <!-- Empty State -->
+            <div class="empty-state">
+              <div class="empty-state-icon">
+                <i class="bi bi-search"></i>
+              </div>
+              <h3 class="empty-state-title">No skills found</h3>
+              <p class="empty-state-description">
+                No skills match your current filters. Try adjusting your search or browse all skills.
+              </p>
+              <div class="empty-state-actions">
+                <a href="/browse" class="btn btn-primary">Clear Filters</a>
+                <% if (typeof user !== 'undefined' && user) { %>
+                  <a href="/skills/add" class="btn btn-outline-secondary">Add Your Skill</a>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Swap Request Modal (all IDs preserved) ── -->
+    <div class="modal fade" id="swapModal" tabindex="-1" aria-labelledby="swapModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="swapModalLabel">
+              <i class="bi bi-arrow-left-right me-2" style="color: var(--color-primary);"></i>Request Skill Swap
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-base); padding: var(--space-4); margin-bottom: var(--space-4);">
+              <div style="font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--space-1);">You want to learn</div>
+              <div style="font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--color-text);" id="requestedSkillName"></div>
+            </div>
+
+            <form id="swapForm">
+              <input type="hidden" id="skillRequestedId">
+              <input type="hidden" id="recipientId">
+
+              <div style="margin-bottom: var(--space-4);">
+                <label for="skillOfferedSelect" class="form-label">
+                  <i class="bi bi-gift me-1"></i>What will you offer in return?
+                </label>
+                <select class="form-select" id="skillOfferedSelect" required>
+                  <% if (user && user.skills && user.skills.length > 0) { %>
+                    <% user.skills.forEach(skill => { %>
+                      <option value="<%= skill._id %>">
+                        <%= skill.name %> (<%= skill.category %>)
+                      </option>
+                    <% }); %>
+                  <% } else { %>
+                    <option value="" disabled selected>Add skills to your profile first</option>
+                  <% } %>
+                </select>
+              </div>
+
+              <div style="margin-bottom: var(--space-2);">
+                <label for="swapMessage" class="form-label">
+                  <i class="bi bi-chat me-1"></i>Message <span style="color: var(--color-text-muted); font-weight: 400;">(optional)</span>
+                </label>
+                <textarea class="form-control" id="swapMessage" rows="3"
+                          placeholder="Hi! I'd love to exchange skills with you..."></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="submitSwapRequest">
+              <span class="spinner-border spinner-border-sm me-1 d-none" id="submitSpinner" role="status"></span>
+              <span class="btn-text">Send Request</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <!-- Browse JS (preserved exactly) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const swapModal = new bootstrap.Modal('#swapModal');
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const proficiencyFilter = document.getElementById('proficiencyFilter');
+      const submitBtn = document.getElementById('submitSwapRequest');
+      const submitSpinner = document.getElementById('submitSpinner');
+      const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+
+      // Auto-submit on filter change
+      [categoryFilter, proficiencyFilter].forEach(el => {
+        if (!el) return;
+        el.addEventListener('change', () => el.form && el.form.submit());
+      });
+      if (searchInput) {
+        searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') searchInput.form.submit(); });
+      }
+
+      // Set up swap request buttons
+      document.querySelectorAll('.request-swap').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.getElementById('skillRequestedId').value = this.dataset.skillId;
+          document.getElementById('recipientId').value = this.dataset.userId;
+          document.getElementById('requestedSkillName').textContent = this.dataset.skillName;
+          swapModal.show();
+        });
+      });
+
+      // Handle form submission (API call preserved)
+      if (submitBtn) {
+        submitBtn.addEventListener('click', async function() {
+          const skillOfferedSelect = document.getElementById('skillOfferedSelect');
+          if (skillOfferedSelect.disabled || !skillOfferedSelect.value) {
+            showToast('Please add skills to your profile before requesting swaps', 'warning');
+            swapModal.hide();
+            return;
+          }
+          const requestData = {
+            skillRequestedId: document.getElementById('skillRequestedId').value,
+            recipientId: document.getElementById('recipientId').value,
+            skillOfferedId: skillOfferedSelect.value,
+            message: document.getElementById('swapMessage').value
+          };
+          if (submitSpinner) submitSpinner.classList.remove('d-none');
+          if (btnText) btnText.textContent = 'Sending...';
+          submitBtn.disabled = true;
+          try {
+            const response = await fetch('/api/swaps', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify(requestData)
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Request failed');
+            }
+            const data = await response.json();
+            showToast(data.message || 'Swap request sent!', 'success');
+            swapModal.hide();
+          } catch (error) {
+            showToast('Error: ' + error.message, 'danger');
+          } finally {
+            if (submitSpinner) submitSpinner.classList.add('d-none');
+            if (btnText) btnText.textContent = 'Send Request';
+            submitBtn.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

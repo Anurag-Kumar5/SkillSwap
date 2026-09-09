@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title>Leaderboard — SkillSwap</title>
+  <meta name="description" content="See the top skill swappers on SkillSwap ranked by experience points.">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="/">Home</a></span>
+          <span class="breadcrumb-item active">Leaderboard</span>
+        </div>
+        <h1 class="page-title">Leaderboard</h1>
+        <p class="page-subtitle">Top skill swappers ranked by experience points earned.</p>
+      </div>
+    </div>
+
+    <div class="container fade-in" style="max-width: 900px; padding: var(--space-8) var(--space-6);">
+      <% if (top && top.length) { %>
+        <!-- Top 3 Spotlight -->
+        <% if (top.length >= 3) { %>
+        <div class="row g-4 mb-8 justify-content-center" style="margin-bottom: var(--space-8);">
+          <!-- 2nd place -->
+          <div class="col-sm-4 col-md-4 fade-in-1">
+            <div class="card text-center" style="padding: var(--space-6); order: 1;">
+              <div style="font-size: 2rem; margin-bottom: var(--space-2);">🥈</div>
+              <img src="<%= top[1].avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(top[1].name) + '&background=2563EB&color=fff&size=64' %>"
+                   class="avatar avatar-xl mx-auto mb-3"
+                   alt="<%= top[1].name %>"
+                   onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(top[1].name) %>&background=2563EB&color=fff&size=64'">
+              <a href="/users/<%= top[1]._id %>" style="font-weight: var(--weight-semibold); color: var(--color-text); text-decoration: none; display: block; margin-bottom: 4px;"><%= top[1].name %></a>
+              <div style="font-size: var(--text-sm); color: var(--color-primary); font-weight: var(--weight-semibold);"><%= top[1].xpPoints || 0 %> XP</div>
+              <span class="badge bg-secondary mt-2">Level <%= top[1].level || 1 %></span>
+            </div>
+          </div>
+          <!-- 1st place (center, taller) -->
+          <div class="col-sm-4 col-md-4 fade-in">
+            <div class="card text-center" style="padding: var(--space-6); border-color: var(--color-primary-muted); box-shadow: var(--shadow-lg);">
+              <div style="font-size: 2.5rem; margin-bottom: var(--space-2);">🥇</div>
+              <img src="<%= top[0].avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(top[0].name) + '&background=2563EB&color=fff&size=64' %>"
+                   class="avatar avatar-2xl mx-auto mb-3 avatar-ring-primary"
+                   alt="<%= top[0].name %>"
+                   onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(top[0].name) %>&background=2563EB&color=fff&size=64'">
+              <a href="/users/<%= top[0]._id %>" style="font-weight: var(--weight-bold); color: var(--color-text); text-decoration: none; display: block; margin-bottom: 4px; font-size: var(--text-lg);"><%= top[0].name %></a>
+              <div style="font-size: var(--text-base); color: var(--color-primary); font-weight: var(--weight-bold);"><%= top[0].xpPoints || 0 %> XP</div>
+              <span class="badge bg-primary mt-2">Level <%= top[0].level || 1 %></span>
+            </div>
+          </div>
+          <!-- 3rd place -->
+          <div class="col-sm-4 col-md-4 fade-in-2">
+            <div class="card text-center" style="padding: var(--space-6);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-2);">🥉</div>
+              <img src="<%= top[2].avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(top[2].name) + '&background=2563EB&color=fff&size=64' %>"
+                   class="avatar avatar-xl mx-auto mb-3"
+                   alt="<%= top[2].name %>"
+                   onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(top[2].name) %>&background=2563EB&color=fff&size=64'">
+              <a href="/users/<%= top[2]._id %>" style="font-weight: var(--weight-semibold); color: var(--color-text); text-decoration: none; display: block; margin-bottom: 4px;"><%= top[2].name %></a>
+              <div style="font-size: var(--text-sm); color: var(--color-primary); font-weight: var(--weight-semibold);"><%= top[2].xpPoints || 0 %> XP</div>
+              <span class="badge bg-secondary mt-2">Level <%= top[2].level || 1 %></span>
+            </div>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Full Table -->
+        <div class="card fade-in-3">
+          <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: var(--weight-semibold);"><i class="bi bi-list-ol me-2"></i>All Rankings</span>
+            <span class="badge bg-secondary"><%= top.length %> members</span>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th width="80">Rank</th>
+                  <th>Member</th>
+                  <th width="120">Level</th>
+                  <th width="120">XP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% top.forEach((u, idx) => { %>
+                  <tr class="fade-in" style="animation-delay: <%= idx * 0.04 %>s">
+                    <td>
+                      <% if (idx === 0) { %>
+                        <span style="font-size: 1.25rem;">🥇</span>
+                      <% } else if (idx === 1) { %>
+                        <span style="font-size: 1.25rem;">🥈</span>
+                      <% } else if (idx === 2) { %>
+                        <span style="font-size: 1.25rem;">🥉</span>
+                      <% } else { %>
+                        <span style="font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-text-muted);">#<%= idx + 1 %></span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <a href="/users/<%= u._id %>" class="text-decoration-none">
+                        <div style="display: flex; align-items: center; gap: var(--space-3);">
+                          <img src="<%= u.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name) + '&background=2563EB&color=fff&size=64' %>"
+                               class="avatar avatar-sm"
+                               onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(u.name) %>&background=2563EB&color=fff&size=64'">
+                          <div>
+                            <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--color-text);"><%= u.name %></div>
+                            <div style="font-size: var(--text-xs); color: var(--color-text-muted);">Member since <%= new Date(u.createdAt).getFullYear() %></div>
+                          </div>
+                        </div>
+                      </a>
+                    </td>
+                    <td>
+                      <span class="badge bg-success">Level <%= u.level || 1 %></span>
+                    </td>
+                    <td>
+                      <span style="font-weight: var(--weight-semibold); color: var(--color-primary);"><%= u.xpPoints || 0 %> XP</span>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-state-icon"><i class="bi bi-trophy"></i></div>
+          <h3 class="empty-state-title">No Rankings Yet</h3>
+          <p class="empty-state-description">Be the first to earn XP and claim the top spot on the leaderboard!</p>
+          <div class="empty-state-actions">
+            <a href="/skills/add" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Add Your First Skill</a>
+            <a href="/browse" class="btn btn-outline-secondary"><i class="bi bi-compass me-1"></i>Browse Skills</a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

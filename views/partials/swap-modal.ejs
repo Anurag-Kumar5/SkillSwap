@@ -1,0 +1,32 @@
+<div class="modal fade" id="swapModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Request Skill Swap</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="swapForm">
+          <input type="hidden" name="recipientId" id="recipientId">
+          <input type="hidden" name="skillRequestedId" id="skillRequestedId">
+          
+          <div class="mb-3">
+            <label class="form-label">You'll offer:</label>
+            <select class="form-select" name="skillOfferedId" required>
+              <% userSkills.forEach(skill => { %>
+                <option value="<%= skill._id %>"><%= skill.name %> (<%= skill.category %>)</option>
+              <% }); %>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">You want to learn:</label>
+            <p class="form-control-plaintext" id="requestedSkillName"></p>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Send Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

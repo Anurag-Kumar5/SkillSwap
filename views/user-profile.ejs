@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title><%= profileUser.name %>'s Profile — SkillSwap</title>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <% const pNextLvl = Math.floor((profileUser.xpPoints || 0) / 100) * 100 + 100; %>
+  <% const pBase = pNextLvl - 100; %>
+  <% const pPct = Math.min(100, Math.floor(((profileUser.xpPoints || 0) - pBase) / 100 * 100)); %>
+
+  <main>
+    <!-- Profile Header -->
+    <div style="background: var(--color-bg); border-bottom: 1px solid var(--color-border); padding: var(--space-10) 0;">
+      <div class="container fade-in" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+        <div class="breadcrumb" style="margin-bottom: var(--space-5);">
+          <span class="breadcrumb-item"><a href="/">Home</a></span>
+          <span class="breadcrumb-item"><a href="/browse">Discover</a></span>
+          <span class="breadcrumb-item active"><%= profileUser.name %></span>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: var(--space-6); flex-wrap: wrap;">
+          <div style="position: relative; flex-shrink: 0;">
+            <img src="<%= profileUser.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profileUser.name) + '&background=2563EB&color=fff&size=128' %>"
+                 class="avatar avatar-4xl avatar-ring"
+                 alt="<%= profileUser.name %>"
+                 onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profileUser.name) %>&background=2563EB&color=fff&size=128'">
+            <span class="badge bg-success" style="position: absolute; bottom: 4px; right: 4px; font-size: 10px; padding: 4px 8px;">
+              Lv <%= profileUser.level || 1 %>
+            </span>
+          </div>
+
+          <div style="flex: 1; min-width: 240px;">
+            <h1 style="font-size: var(--text-3xl); font-weight: var(--weight-bold); color: var(--color-text); margin-bottom: var(--space-1); letter-spacing: -0.03em;"><%= profileUser.name %></h1>
+            <div style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-3); display: flex; gap: var(--space-4); flex-wrap: wrap;">
+              <% if (profileUser.location) { %><span><i class="bi bi-geo-alt me-1"></i><%= profileUser.location %></span><% } %>
+              <% if (profileUser.age) { %><span><i class="bi bi-calendar me-1"></i>Age <%= profileUser.age %></span><% } %>
+              <span><i class="bi bi-calendar3 me-1"></i>Joined <%= new Date(profileUser.createdAt).toLocaleDateString('en', {month:'long', year:'numeric'}) %></span>
+            </div>
+            <% if (profileUser.bio) { %>
+              <p style="font-size: var(--text-base); color: var(--color-text-secondary); max-width: 520px; line-height: var(--leading-relaxed); margin-bottom: var(--space-4);"><%= profileUser.bio %></p>
+            <% } %>
+
+            <!-- XP bar -->
+            <div style="max-width: 360px; margin-bottom: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: 4px;">
+                <span><strong style="color: var(--color-primary);"><%= profileUser.xpPoints || 0 %></strong> XP</span>
+                <span>Level <%= profileUser.level || 1 %></span>
+              </div>
+              <div class="xp-bar"><div class="xp-bar-fill" style="width: <%= pPct %>%;"></div></div>
+            </div>
+
+            <!-- Stats -->
+            <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-4);">
+              <div class="profile-stat">
+                <span class="profile-stat-value"><%= profileUser.skills ? profileUser.skills.length : 0 %></span>
+                <span class="profile-stat-label">Skills</span>
+              </div>
+              <div class="profile-stat">
+                <span class="profile-stat-value"><%= profileUser.ratings ? profileUser.ratings.average.toFixed(1) : '—' %></span>
+                <span class="profile-stat-label">Rating</span>
+              </div>
+              <% if (profileUser.reviews && profileUser.reviews.length > 0) { %>
+              <div class="profile-stat">
+                <span class="profile-stat-value"><%= profileUser.reviews.length %></span>
+                <span class="profile-stat-label">Reviews</span>
+              </div>
+              <% } %>
+            </div>
+
+            <!-- Social links -->
+            <% if (profileUser.socialLinks && (profileUser.socialLinks.linkedin || profileUser.socialLinks.twitter || profileUser.socialLinks.github || profileUser.socialLinks.instagram)) { %>
+              <div style="display: flex; gap: var(--space-2); margin-bottom: 0;">
+                <% if (profileUser.socialLinks.linkedin) { %><a href="<%= profileUser.socialLinks.linkedin %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm"><i class="bi bi-linkedin"></i></a><% } %>
+                <% if (profileUser.socialLinks.twitter) { %><a href="<%= profileUser.socialLinks.twitter %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm"><i class="bi bi-twitter-x"></i></a><% } %>
+                <% if (profileUser.socialLinks.github) { %><a href="<%= profileUser.socialLinks.github %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm"><i class="bi bi-github"></i></a><% } %>
+                <% if (profileUser.socialLinks.instagram) { %><a href="<%= profileUser.socialLinks.instagram %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm"><i class="bi bi-instagram"></i></a><% } %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- CTA action -->
+          <% if (typeof user !== 'undefined' && user && user._id.toString() !== profileUser._id.toString()) { %>
+            <div style="flex-shrink: 0;">
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#swapModal">
+                <i class="bi bi-arrow-left-right me-1"></i>Request Swap
+              </button>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container fade-in-1" style="max-width: var(--container-max); padding: var(--space-8) var(--space-6);">
+      <!-- Tabs -->
+      <ul class="nav nav-tabs mb-6" id="profileTabs" role="tablist" style="margin-bottom: var(--space-8);">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pu-skills" type="button" role="tab">
+            <i class="bi bi-tools me-1"></i>Skills (<%= profileUser.skills ? profileUser.skills.length : 0 %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pu-reviews" type="button" role="tab">
+            <i class="bi bi-star me-1"></i>Reviews
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Skills -->
+        <div class="tab-pane fade show active" id="pu-skills" role="tabpanel">
+          <% if (profileUser.skills && profileUser.skills.length > 0) { %>
+            <div class="row g-3">
+              <% profileUser.skills.forEach(skill => { %>
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-hover h-100">
+                    <div class="card-body">
+                      <h5 style="font-size: var(--text-base); font-weight: var(--weight-semibold); margin: 0 0 var(--space-2);">
+                        <%= skill.name %>
+                      </h5>
+                      <div style="display: flex; gap: var(--space-1); flex-wrap: wrap; margin-bottom: var(--space-3);">
+                        <span class="category-chip"><%= skill.category %></span>
+                        <% if (skill.proficiency) { %><span class="badge bg-secondary"><%= skill.proficiency %></span><% } %>
+                      </div>
+                      <% if (skill.description) { %>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin: 0; line-height: var(--leading-relaxed); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"><%= skill.description %></p>
+                      <% } %>
+                      <!-- Swap request button on skill card (if logged in and not own profile) -->
+                      <% if (typeof user !== 'undefined' && user && user._id.toString() !== profileUser._id.toString()) { %>
+                        <div style="margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--color-border);">
+                          <button class="btn btn-primary btn-sm w-100 open-swap-modal"
+                                  data-skill-name="<%= skill.name %>" data-skill-id="<%= skill._id %>">
+                            <i class="bi bi-arrow-left-right me-1"></i>Request Swap
+                          </button>
+                        </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="bi bi-tools"></i></div>
+              <h3 class="empty-state-title">No skills listed yet</h3>
+              <p class="empty-state-description">This member hasn't added any skills yet.</p>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Reviews -->
+        <div class="tab-pane fade" id="pu-reviews" role="tabpanel">
+          <% if (profileUser.reviews && profileUser.reviews.length > 0) { %>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <% profileUser.reviews.forEach(review => { %>
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3);">
+                      <div style="display: flex; align-items: center; gap: var(--space-3);">
+                        <img src="<%= review.reviewer && review.reviewer.avatar ? review.reviewer.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(review.reviewer ? review.reviewer.name : 'User') + '&background=2563EB&color=fff&size=32' %>"
+                             class="avatar avatar-sm" alt="Reviewer">
+                        <div>
+                          <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--color-text);"><%= review.reviewer ? review.reviewer.name : 'Anonymous' %></div>
+                          <div style="font-size: var(--text-xs); color: var(--color-text-muted);"><%= new Date(review.createdAt).toLocaleDateString() %></div>
+                        </div>
+                      </div>
+                      <div class="star-rating">
+                        <% for(let i = 1; i <= 5; i++) { %><span class="<%= i <= review.rating ? '' : 'empty' %>">★</span><% } %>
+                      </div>
+                    </div>
+                    <% if (review.comment) { %>
+                      <p style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: var(--leading-relaxed); margin: 0;"><%= review.comment %></p>
+                    <% } %>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="bi bi-star"></i></div>
+              <h3 class="empty-state-title">No reviews yet</h3>
+              <p class="empty-state-description">This member hasn't received any reviews yet.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <!-- Swap Request Modal -->
+  <% if (typeof user !== 'undefined' && user && user._id.toString() !== profileUser._id.toString()) { %>
+  <div class="modal fade" id="swapModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-arrow-left-right me-2" style="color: var(--color-primary);"></i>Request a Swap with <%= profileUser.name %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="requestedSkillDisplay" style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-base); padding: var(--space-4); margin-bottom: var(--space-4);">
+            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: var(--weight-medium);">You want to learn</div>
+            <div id="requestedSkillName" style="font-weight: var(--weight-semibold); color: var(--color-text);"></div>
+          </div>
+          <input type="hidden" id="skillRequestedId">
+          <input type="hidden" id="recipientId" value="<%= profileUser._id %>">
+          <div style="margin-bottom: var(--space-4);">
+            <label class="form-label">What will you offer in return?</label>
+            <select class="form-select" id="skillOfferedSelect">
+              <% if (user.skills && user.skills.length > 0) { %>
+                <% user.skills.forEach(skill => { %>
+                  <option value="<%= skill._id %>"><%= skill.name %> (<%= skill.category %>)</option>
+                <% }); %>
+              <% } else { %>
+                <option disabled>Add skills to your profile first</option>
+              <% } %>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Message <span style="font-weight:400; color: var(--color-text-muted);">(optional)</span></label>
+            <textarea class="form-control" id="swapMessage" rows="3" placeholder="Hi! I'd love to exchange skills with you..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="submitSwapRequest">Send Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <script>
+    // Open swap modal with pre-filled skill
+    document.querySelectorAll('.open-swap-modal').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.getElementById('skillRequestedId').value = this.dataset.skillId;
+        document.getElementById('requestedSkillName').textContent = this.dataset.skillName;
+        new bootstrap.Modal('#swapModal').show();
+      });
+    });
+
+    // Submit swap request
+    const submitBtn = document.getElementById('submitSwapRequest');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', async function() {
+        const skillOfferedSelect = document.getElementById('skillOfferedSelect');
+        if (!skillOfferedSelect.value) { showToast('Add skills to your profile first', 'warning'); return; }
+        try {
+          submitBtn.disabled = true; submitBtn.textContent = 'Sending...';
+          const res = await fetch('/api/swaps', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              skillRequestedId: document.getElementById('skillRequestedId').value,
+              recipientId: document.getElementById('recipientId').value,
+              skillOfferedId: skillOfferedSelect.value,
+              message: document.getElementById('swapMessage').value
+            })
+          });
+          const data = await res.json();
+          showToast(data.message || 'Request sent!', res.ok ? 'success' : 'danger');
+          if (res.ok) bootstrap.Modal.getInstance('#swapModal').hide();
+        } catch { showToast('Failed to send request', 'danger'); }
+        finally { submitBtn.disabled = false; submitBtn.textContent = 'Send Request'; }
+      });
+    }
+  </script>
+</body>
+</html>

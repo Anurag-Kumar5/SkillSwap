@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title><%= user.name %>'s Profile — SkillSwap</title>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <% const nextLevelXp = Math.floor((user.xpPoints || 0) / 100) * 100 + 100; %>
+  <% const currentLevelBase = nextLevelXp - 100; %>
+  <% const xpPct = Math.min(100, Math.floor(((user.xpPoints || 0) - currentLevelBase) / 100 * 100)); %>
+
+  <main>
+    <!-- Profile Header -->
+    <div style="background: var(--color-bg); border-bottom: 1px solid var(--color-border); padding: var(--space-10) 0;">
+      <div class="container fade-in" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+        <div style="display: flex; align-items: flex-start; gap: var(--space-6); flex-wrap: wrap;">
+          <!-- Avatar -->
+          <div style="position: relative; flex-shrink: 0;">
+            <img src="<%= user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=2563EB&color=fff&size=128' %>"
+                 class="avatar avatar-4xl avatar-ring"
+                 alt="<%= user.name %>"
+                 onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(user.name) %>&background=2563EB&color=fff&size=128'">
+            <span class="badge bg-success" style="position: absolute; bottom: 4px; right: 4px; font-size: 10px; padding: 4px 8px;">
+              Lv <%= user.level || 1 %>
+            </span>
+          </div>
+
+          <!-- Info -->
+          <div style="flex: 1; min-width: 240px;">
+            <h1 style="font-size: var(--text-3xl); font-weight: var(--weight-bold); color: var(--color-text); margin-bottom: var(--space-1); letter-spacing: -0.03em;">
+              <%= user.name %>
+            </h1>
+            <div style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-3); display: flex; gap: var(--space-4); flex-wrap: wrap;">
+              <% if (user.location) { %><span><i class="bi bi-geo-alt me-1"></i><%= user.location %></span><% } %>
+              <% if (user.age) { %><span><i class="bi bi-calendar me-1"></i>Age <%= user.age %></span><% } %>
+              <span><i class="bi bi-calendar3 me-1"></i>Joined <%= new Date(user.createdAt).toLocaleDateString('en', {month:'long', year:'numeric'}) %></span>
+            </div>
+
+            <% if (user.bio) { %>
+              <p style="font-size: var(--text-base); color: var(--color-text-secondary); max-width: 520px; line-height: var(--leading-relaxed); margin-bottom: var(--space-4);"><%= user.bio %></p>
+            <% } %>
+
+            <!-- XP Progress -->
+            <div style="max-width: 360px; margin-bottom: var(--space-5);">
+              <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-1);">
+                <span><strong style="color: var(--color-primary);"><%= user.xpPoints || 0 %></strong> XP</span>
+                <span><%= nextLevelXp - (user.xpPoints || 0) %> XP to Level <%= (user.level || 1) + 1 %></span>
+              </div>
+              <div class="xp-bar"><div class="xp-bar-fill" style="width: <%= xpPct %>%;"></div></div>
+            </div>
+
+            <!-- Stats -->
+            <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-5);">
+              <div class="profile-stat">
+                <span class="profile-stat-value"><%= user.skills.length %></span>
+                <span class="profile-stat-label">Skills</span>
+              </div>
+              <div class="profile-stat">
+                <span class="profile-stat-value"><%= pendingSwapsCount || 0 %></span>
+                <span class="profile-stat-label">Pending Swaps</span>
+              </div>
+              <div class="profile-stat">
+                <span class="profile-stat-value"><%= user.ratings ? user.ratings.average.toFixed(1) : '—' %></span>
+                <span class="profile-stat-label">Rating</span>
+              </div>
+            </div>
+
+            <!-- Social links -->
+            <% if (user.socialLinks && (user.socialLinks.linkedin || user.socialLinks.twitter || user.socialLinks.github || user.socialLinks.instagram)) { %>
+              <div style="display: flex; gap: var(--space-2);">
+                <% if (user.socialLinks.linkedin) { %>
+                  <a href="<%= user.socialLinks.linkedin %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <% } %>
+                <% if (user.socialLinks.twitter) { %>
+                  <a href="<%= user.socialLinks.twitter %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                <% } %>
+                <% if (user.socialLinks.github) { %>
+                  <a href="<%= user.socialLinks.github %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm" title="GitHub"><i class="bi bi-github"></i></a>
+                <% } %>
+                <% if (user.socialLinks.instagram) { %>
+                  <a href="<%= user.socialLinks.instagram %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-icon btn-sm" title="Instagram"><i class="bi bi-instagram"></i></a>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Actions -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-2); flex-shrink: 0;">
+            <a href="/profile/edit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-pencil me-1"></i>Edit Profile</a>
+            <a href="/skills/add" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Add Skill</a>
+            <a href="/browse" class="btn btn-outline-secondary btn-sm"><i class="bi bi-compass me-1"></i>Discover</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container fade-in-1" style="max-width: var(--container-max); padding: var(--space-8) var(--space-6);">
+      <!-- Tabs -->
+      <ul class="nav nav-tabs mb-6" id="profileTabs" role="tablist" style="margin-bottom: var(--space-8);">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab">
+            <i class="bi bi-tools me-1"></i>Skills (<%= user.skills.length %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+            <i class="bi bi-star me-1"></i>Reviews
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#interests" type="button" role="tab">
+            <i class="bi bi-heart me-1"></i>About
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Skills Tab -->
+        <div class="tab-pane fade show active" id="skills" role="tabpanel">
+          <% if (user.skills.length > 0) { %>
+            <div class="row g-3">
+              <% user.skills.forEach(skill => { %>
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-hover h-100">
+                    <div class="card-body">
+                      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: var(--space-3);">
+                        <div>
+                          <h5 style="font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--color-text); margin: 0 0 var(--space-2);">
+                            <%= skill.name %>
+                          </h5>
+                          <div style="display: flex; gap: var(--space-1); flex-wrap: wrap;">
+                            <span class="category-chip"><%= skill.category %></span>
+                            <% if (skill.proficiency) { %>
+                              <span class="badge bg-secondary"><%= skill.proficiency %></span>
+                            <% } %>
+                          </div>
+                        </div>
+                        <!-- Delete button (form preserved) -->
+                        <form action="/skills/<%= skill._id %>/delete" method="POST" onsubmit="return confirm('Delete this skill?')">
+                          <button type="submit" class="btn btn-ghost btn-icon-sm" title="Delete skill" style="color: var(--color-text-muted);">
+                            <i class="bi bi-trash3" style="font-size: 0.8rem;"></i>
+                          </button>
+                        </form>
+                      </div>
+                      <% if (skill.description) { %>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: var(--leading-relaxed); margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"><%= skill.description %></p>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="bi bi-tools"></i></div>
+              <h3 class="empty-state-title">No skills added yet</h3>
+              <p class="empty-state-description">Add your first skill to start attracting swap partners.</p>
+              <div class="empty-state-actions">
+                <a href="/skills/add" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Add Your First Skill</a>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+          <% if (user.reviews && user.reviews.length > 0) { %>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <% user.reviews.forEach(review => { %>
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3);">
+                      <div style="display: flex; align-items: center; gap: var(--space-3);">
+                        <img src="<%= review.reviewer && review.reviewer.avatar ? review.reviewer.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(review.reviewer ? review.reviewer.name : 'User') + '&background=2563EB&color=fff&size=32' %>"
+                             class="avatar avatar-sm" alt="Reviewer">
+                        <div>
+                          <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--color-text);"><%= review.reviewer ? review.reviewer.name : 'Anonymous' %></div>
+                          <div style="font-size: var(--text-xs); color: var(--color-text-muted);"><%= new Date(review.createdAt).toLocaleDateString() %></div>
+                        </div>
+                      </div>
+                      <div class="star-rating">
+                        <% for(let i = 1; i <= 5; i++) { %>
+                          <span class="<%= i <= review.rating ? '' : 'empty' %>">★</span>
+                        <% } %>
+                      </div>
+                    </div>
+                    <% if (review.comment) { %>
+                      <p style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: var(--leading-relaxed); margin: 0;"><%= review.comment %></p>
+                    <% } %>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="bi bi-star"></i></div>
+              <h3 class="empty-state-title">No reviews yet</h3>
+              <p class="empty-state-description">Complete skill swaps to receive your first review.</p>
+              <div class="empty-state-actions">
+                <a href="/browse" class="btn btn-primary"><i class="bi bi-compass me-1"></i>Start a Swap</a>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- About Tab -->
+        <div class="tab-pane fade" id="interests" role="tabpanel">
+          <div class="card">
+            <div class="card-body" style="display: flex; flex-direction: column; gap: var(--space-6);">
+              <% if (user.bio) { %>
+                <div>
+                  <div style="font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2);">Bio</div>
+                  <p style="color: var(--color-text-secondary); line-height: var(--leading-relaxed); margin: 0;"><%= user.bio %></p>
+                </div>
+              <% } %>
+              <% if (user.interests && user.interests.length > 0) { %>
+                <div>
+                  <div style="font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-3);">Interests</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+                    <% user.interests.forEach(interest => { %>
+                      <span class="category-chip"><%= interest %></span>
+                    <% }); %>
+                  </div>
+                </div>
+              <% } %>
+              <% if (!user.bio && (!user.interests || user.interests.length === 0)) { %>
+                <div class="empty-state" style="padding: var(--space-8);">
+                  <div class="empty-state-icon"><i class="bi bi-person-lines-fill"></i></div>
+                  <h3 class="empty-state-title">Add some info about yourself</h3>
+                  <p class="empty-state-description">Let others know who you are and what you're passionate about.</p>
+                  <div class="empty-state-actions">
+                    <a href="/profile/edit" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Edit Profile</a>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

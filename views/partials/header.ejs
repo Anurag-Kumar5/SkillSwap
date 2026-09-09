@@ -1,0 +1,100 @@
+<nav class="navbar navbar-expand-lg" aria-label="Main navigation">
+  <div class="container" style="max-width: var(--container-max);">
+    <!-- Brand -->
+    <a class="navbar-brand" href="/">SkillSwap</a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <!-- Left nav links -->
+      <ul class="navbar-nav me-auto gap-1 py-2 py-lg-0">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/browse">
+              <i class="bi bi-compass me-1"></i>Discover
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/swaps">
+              <i class="bi bi-arrow-left-right me-1"></i>My Swaps
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/leaderboard">
+              <i class="bi bi-trophy me-1"></i>Leaderboard
+            </a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/browse">Discover Skills</a>
+          </li>
+        <% } %>
+      </ul>
+
+      <!-- Right actions -->
+      <div class="d-flex align-items-center gap-2 py-2 py-lg-0">
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="darkModeToggle" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+          <i class="bi bi-moon-fill" id="darkModeIcon" style="font-size: 0.875rem;"></i>
+        </button>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+          <!-- Chats -->
+          <a class="nav-notif-btn text-decoration-none" href="/swaps" title="Chats & Swaps" aria-label="Chats">
+            <i class="bi bi-chat-dots" style="font-size: 1.1rem; color: var(--color-text-secondary);"></i>
+          </a>
+
+          <!-- Notifications -->
+          <a class="nav-notif-btn position-relative text-decoration-none" href="/notifications" title="Notifications" aria-label="Notifications">
+            <i class="bi bi-bell" style="font-size: 1.1rem; color: var(--color-text-secondary);"></i>
+            <span id="notifBadge" class="d-none" aria-live="polite"></span>
+          </a>
+
+          <!-- User Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-ghost d-flex align-items-center gap-2 px-2"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: var(--radius-base);">
+              <img src="<%= user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || user.username || 'U') + '&background=2563EB&color=fff&size=64' %>"
+                   class="avatar avatar-sm"
+                   alt="<%= user.name || 'User' %>"
+                   onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(user.name || 'U') %>&background=2563EB&color=fff&size=64'">
+              <span class="d-none d-lg-inline" style="font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--color-text); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= user.name || user.username %></span>
+              <i class="bi bi-chevron-down" style="font-size: 0.75rem; color: var(--color-text-muted);"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" href="/profile">
+                  <i class="bi bi-person"></i> My Profile
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/skills/add">
+                  <i class="bi bi-plus-circle"></i> Add Skill
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/profile/edit">
+                  <i class="bi bi-gear"></i> Settings
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="/logout">
+                  <i class="bi bi-box-arrow-right"></i> Sign Out
+                </a>
+              </li>
+            </ul>
+          </div>
+        <% } else { %>
+          <a href="/login" class="btn btn-ghost" style="font-size: var(--text-sm);">Sign In</a>
+          <a href="/signup" class="btn btn-primary btn-sm">Get Started</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

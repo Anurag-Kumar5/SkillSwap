@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <%- include('partials/head') %>
+  <title>SkillSwap — Learn what you need. Teach what you know.</title>
+  <meta name="description" content="SkillSwap is a peer-to-peer skill exchange platform. Connect with people to learn and teach skills — no money needed.">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <!-- ===== HERO ===================================================== -->
+    <section class="hero-landing">
+      <div class="container" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6 fade-in">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--color-primary-light); border: 1px solid var(--color-primary-muted); border-radius: var(--radius-full); padding: 0.35rem 0.875rem; margin-bottom: var(--space-5);">
+              <i class="bi bi-lightning-fill" style="color: var(--color-primary); font-size: 0.75rem;"></i>
+              <span style="font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--color-primary); letter-spacing: 0.04em;">PEER-TO-PEER LEARNING</span>
+            </div>
+            <h1 class="hero-title">
+              Learn what you need.<br>
+              <span class="accent">Teach what you know.</span>
+            </h1>
+            <p class="hero-subtitle">
+              Connect with people around the world to exchange skills. No money needed — just knowledge, curiosity, and community.
+            </p>
+            <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+              <% if (typeof user === 'undefined' || !user) { %>
+                <a href="/signup" class="btn btn-primary btn-lg">
+                  Get Started Free
+                  <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+                <a href="/browse" class="btn btn-outline-secondary btn-lg">
+                  Explore Skills
+                </a>
+              <% } else { %>
+                <a href="/browse" class="btn btn-primary btn-lg">
+                  <i class="bi bi-compass me-1"></i>Discover Skills
+                </a>
+                <a href="/profile" class="btn btn-outline-secondary btn-lg">
+                  My Profile
+                </a>
+              <% } %>
+            </div>
+          </div>
+          <div class="col-lg-6 fade-in-1 d-none d-lg-block">
+            <!-- Hero visual: stacked user cards simulation -->
+            <div style="position: relative; padding: 2rem;">
+              <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-xl); margin-bottom: var(--space-3);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                  <div class="avatar avatar-md" style="background: #DBEAFE; color: #2563EB; font-weight: 700; font-size: 0.875rem;">SA</div>
+                  <div>
+                    <div style="font-weight: var(--weight-semibold); font-size: var(--text-sm); color: var(--color-text);">Sarah A.</div>
+                    <div style="font-size: var(--text-xs); color: var(--color-text-muted);">📍 Berlin, Germany</div>
+                  </div>
+                  <div style="margin-left: auto; display: flex; gap: 2px; color: #F59E0B; font-size: 0.75rem;">★★★★★</div>
+                </div>
+                <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-2);">
+                  <span style="font-size: var(--text-xs); color: var(--color-text-muted); width: 100%; font-weight: var(--weight-medium);">Can teach:</span>
+                  <span class="skill-chip">Python</span>
+                  <span class="skill-chip">Data Analysis</span>
+                </div>
+                <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                  <span style="font-size: var(--text-xs); color: var(--color-text-muted); width: 100%; font-weight: var(--weight-medium);">Wants to learn:</span>
+                  <span class="skill-chip skill-chip-wanted">Spanish</span>
+                  <span class="skill-chip skill-chip-wanted">Guitar</span>
+                </div>
+              </div>
+              <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-xl); margin-left: var(--space-8);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                  <div class="avatar avatar-md" style="background: #D1FAE5; color: #059669; font-weight: 700; font-size: 0.875rem;">MK</div>
+                  <div>
+                    <div style="font-weight: var(--weight-semibold); font-size: var(--text-sm); color: var(--color-text);">Marco K.</div>
+                    <div style="font-size: var(--text-xs); color: var(--color-text-muted);">📍 Madrid, Spain</div>
+                  </div>
+                  <div style="margin-left: auto; display: flex; gap: 2px; color: #F59E0B; font-size: 0.75rem;">★★★★☆</div>
+                </div>
+                <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-2);">
+                  <span style="font-size: var(--text-xs); color: var(--color-text-muted); width: 100%; font-weight: var(--weight-medium);">Can teach:</span>
+                  <span class="skill-chip">Spanish</span>
+                  <span class="skill-chip">Guitar</span>
+                </div>
+                <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                  <span style="font-size: var(--text-xs); color: var(--color-text-muted); width: 100%; font-weight: var(--weight-medium);">Wants to learn:</span>
+                  <span class="skill-chip skill-chip-wanted">Python</span>
+                </div>
+              </div>
+              <!-- Connection indicator -->
+              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--color-primary); color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 6px var(--color-bg), var(--shadow-lg); z-index: 2; font-size: 1.1rem;">
+                <i class="bi bi-arrow-left-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- ===== HOW IT WORKS ============================================= -->
+    <section class="section">
+      <div class="container" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+        <div class="section-header text-center">
+          <div class="section-label">How it works</div>
+          <h2 class="section-title">Exchange skills in 3 simple steps</h2>
+          <p class="section-description mx-auto" style="font-size: var(--text-base);">No tuition fees, no subscriptions — just a community of people helping each other grow.</p>
+        </div>
+        <div class="row g-5 justify-content-center">
+          <div class="col-md-4 fade-in-1">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="step-title">Share Your Skills</h3>
+                <p class="step-description">Create your profile and list the skills you can offer — from coding and languages to cooking, music, or design.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 fade-in-2">
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="step-title">Find Your Match</h3>
+                <p class="step-description">Browse the community, discover people who have the skills you want, and send a swap request in seconds.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 fade-in-3">
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="step-title">Start Learning</h3>
+                <p class="step-description">Chat, schedule sessions, and use our built-in video calling to exchange skills in real time — from anywhere.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CATEGORIES =============================================== -->
+    <section class="section section-alt">
+      <div class="container" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+        <div class="section-header text-center">
+          <div class="section-label">Skill Categories</div>
+          <h2 class="section-title">Find what you're looking for</h2>
+        </div>
+        <div class="row g-3 justify-content-center" style="max-width: 900px; margin: 0 auto;">
+          <div class="col-6 col-sm-4 col-md-3">
+            <a href="/browse?category=Tech" class="category-card text-decoration-none">
+              <div class="category-icon">💻</div>
+              <div class="category-name">Technology</div>
+            </a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-3">
+            <a href="/browse?category=Language" class="category-card text-decoration-none">
+              <div class="category-icon">🗣️</div>
+              <div class="category-name">Languages</div>
+            </a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-3">
+            <a href="/browse?category=Music" class="category-card text-decoration-none">
+              <div class="category-icon">🎵</div>
+              <div class="category-name">Music</div>
+            </a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-3">
+            <a href="/browse?category=Art" class="category-card text-decoration-none">
+              <div class="category-icon">🎨</div>
+              <div class="category-name">Art & Design</div>
+            </a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-3">
+            <a href="/browse?category=Cooking" class="category-card text-decoration-none">
+              <div class="category-icon">🍳</div>
+              <div class="category-name">Cooking</div>
+            </a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-3">
+            <a href="/browse?category=Other" class="category-card text-decoration-none">
+              <div class="category-icon">✨</div>
+              <div class="category-name">Other</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== WHY SKILLSWAP ============================================ -->
+    <section class="section">
+      <div class="container" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+        <div class="row align-items-center g-10">
+          <div class="col-lg-5 fade-in">
+            <div class="section-label">Why SkillSwap</div>
+            <h2 class="section-title">Built for people who love to learn</h2>
+            <p class="section-description mb-6" style="font-size: var(--text-base);">SkillSwap replaces expensive tutors and one-sided learning with genuine human connection and mutual growth.</p>
+            <% if (typeof user === 'undefined' || !user) { %>
+              <a href="/signup" class="btn btn-primary">Join the Community</a>
+            <% } else { %>
+              <a href="/browse" class="btn btn-primary">Discover Skills</a>
+            <% } %>
+          </div>
+          <div class="col-lg-7">
+            <div class="row g-4">
+              <div class="col-sm-6 fade-in-1">
+                <div class="feature-item">
+                  <div class="feature-icon-wrap"><i class="bi bi-people"></i></div>
+                  <div>
+                    <div class="feature-title">Learn from real people</div>
+                    <p class="feature-description">Connect with skilled individuals who are passionate about sharing what they know.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 fade-in-2">
+                <div class="feature-item">
+                  <div class="feature-icon-wrap success"><i class="bi bi-star"></i></div>
+                  <div>
+                    <div class="feature-title">Build your reputation</div>
+                    <p class="feature-description">Earn ratings, badges, and XP as you complete swaps and grow your community standing.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 fade-in-3">
+                <div class="feature-item">
+                  <div class="feature-icon-wrap warning"><i class="bi bi-camera-video"></i></div>
+                  <div>
+                    <div class="feature-title">Built-in video calling</div>
+                    <p class="feature-description">No external tools needed — chat and call your swap partner directly in the platform.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 fade-in-4">
+                <div class="feature-item">
+                  <div class="feature-icon-wrap danger"><i class="bi bi-globe2"></i></div>
+                  <div>
+                    <div class="feature-title">Global community</div>
+                    <p class="feature-description">Connect with learners across 120+ countries. Skills have no borders.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ====================================================== -->
+    <section class="cta-section">
+      <div class="container" style="max-width: 680px; padding: 0 var(--space-6);">
+        <h2 class="cta-title">Ready to start your skill journey?</h2>
+        <p class="cta-description">Join thousands of people who are learning and teaching every day.</p>
+        <div style="display: flex; justify-content: center; gap: var(--space-3); flex-wrap: wrap;">
+          <% if (typeof user === 'undefined' || !user) { %>
+            <a href="/signup" class="btn btn-light btn-lg">Sign Up — It's Free</a>
+            <a href="/browse" class="btn btn-outline-light btn-lg">Browse Skills</a>
+          <% } else { %>
+            <a href="/browse" class="btn btn-light btn-lg">
+              <i class="bi bi-compass me-1"></i>Discover Skills
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <style>
+    /* Hero visual animation */
+    .hero-landing .row > .col-lg-6:last-child > div {
+      animation: heroFloat 6s ease-in-out infinite;
+    }
+    @keyframes heroFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+    .step-item { flex-direction: column; align-items: center; text-align: center; }
+    .feature-item { flex-direction: row; align-items: flex-start; }
+  </style>
+</body>
+</html>

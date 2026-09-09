@@ -1,0 +1,150 @@
+<footer>
+  <div class="container" style="max-width: var(--container-max); padding: 0 var(--space-6);">
+    <div class="footer-grid">
+      <!-- Brand -->
+      <div>
+        <div class="footer-brand">SkillSwap</div>
+        <p class="footer-tagline">A peer-to-peer skill exchange platform. Learn what you need, teach what you know.</p>
+      </div>
+      <!-- Platform -->
+      <div>
+        <div class="footer-heading">Platform</div>
+        <ul class="footer-links">
+          <li><a href="/browse" class="footer-link">Discover Skills</a></li>
+          <li><a href="/swaps" class="footer-link">My Swaps</a></li>
+          <li><a href="/leaderboard" class="footer-link">Leaderboard</a></li>
+          <li><a href="/skills/add" class="footer-link">Add a Skill</a></li>
+        </ul>
+      </div>
+      <!-- Account -->
+      <div>
+        <div class="footer-heading">Account</div>
+        <ul class="footer-links">
+          <% if (typeof user !== 'undefined' && user) { %>
+            <li><a href="/profile" class="footer-link">My Profile</a></li>
+            <li><a href="/profile/edit" class="footer-link">Settings</a></li>
+            <li><a href="/notifications" class="footer-link">Notifications</a></li>
+            <li><a href="/logout" class="footer-link">Sign Out</a></li>
+          <% } else { %>
+            <li><a href="/login" class="footer-link">Sign In</a></li>
+            <li><a href="/signup" class="footer-link">Create Account</a></li>
+          <% } %>
+        </ul>
+      </div>
+      <!-- Company -->
+      <div>
+        <div class="footer-heading">Legal</div>
+        <ul class="footer-links">
+          <li><span class="footer-link" style="cursor: default;">Privacy Policy</span></li>
+          <li><span class="footer-link" style="cursor: default;">Terms of Service</span></li>
+          <li><span class="footer-link" style="cursor: default;">Cookie Policy</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <%= new Date().getFullYear() %> SkillSwap. All rights reserved.</span>
+      <span>Built for learners, by learners.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast Container -->
+<div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Scripts -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  (function(){
+    try {
+      const socket = io();
+      const userId = '<%= (typeof user !== "undefined" && user) ? user._id : "" %>';
+      if (userId) socket.emit('joinRoom', userId);
+
+      // ── Toast helper (global) ──────────────────────────────
+      window.showToast = function(message, variant, delay) {
+        variant = variant || 'success';
+        delay   = delay || 4000;
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        // Map old variant names to new
+        const variantMap = { error: 'danger', warning: 'warning', success: 'success', info: 'info' };
+        const v = variantMap[variant] || variant;
+        const iconMap = {
+          success: 'check-circle-fill',
+          danger:  'exclamation-triangle-fill',
+          warning: 'exclamation-circle-fill',
+          info:    'info-circle-fill'
+        };
+        const icon = iconMap[v] || 'bell-fill';
+
+        const toast = document.createElement('div');
+        toast.className = 'toast text-bg-' + v;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+          <div class="d-flex align-items-start p-3" style="gap: 0.75rem;">
+            <i class="bi bi-${icon}" style="font-size: 1rem; margin-top: 1px; flex-shrink: 0;"></i>
+            <div class="toast-body flex-1" style="padding: 0;">${message}</div>
+            <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>`;
+        container.appendChild(toast);
+        if (window.bootstrap) {
+          const bsToast = new bootstrap.Toast(toast, { delay });
+          bsToast.show();
+          toast.addEventListener('hidden.bs.toast', () => toast.remove());
+        }
+      };
+
+      // ── Socket event handlers ──────────────────────────────
+      socket.on('swapStatusUpdated', function(data) {
+        if (!data) return;
+        const msg = 'Swap ' + (data.status || 'updated') + (data.status === 'accepted' ? ' — great news!' : '');
+        showToast(msg, data.status === 'accepted' ? 'success' : 'warning');
+        refreshNotifBadge();
+      });
+      socket.on('newMessage', function(data) {
+        if (!data) return;
+        showToast('New message from ' + (data.senderName || 'someone'), 'info');
+        refreshNotifBadge();
+      });
+      socket.on('swapRequest', function(data) {
+        if (!data) return;
+        showToast('New swap request from ' + (data.requesterName || 'someone'), 'info');
+        refreshNotifBadge();
+      });
+      socket.on('swapAccepted', function(data) {
+        if (!data) return;
+        showToast('Your swap request was accepted!', 'success');
+        refreshNotifBadge();
+      });
+      socket.on('swapRejected', function(data) {
+        if (!data) return;
+        showToast('Your swap request was rejected.', 'warning');
+        refreshNotifBadge();
+      });
+      socket.on('reviewReceived', function(data) {
+        if (!data) return;
+        showToast('You received a new review!', 'info');
+        refreshNotifBadge();
+      });
+
+      function refreshNotifBadge() {
+        fetch('/notifications/unread-count', { headers: { 'Accept': 'application/json' }})
+          .then(r => r.json())
+          .then(function({ count }) {
+            const badge = document.getElementById('notifBadge');
+            if (!badge) return;
+            if (count > 0) {
+              badge.textContent = count > 99 ? '99+' : count;
+              badge.classList.remove('d-none');
+            } else {
+              badge.classList.add('d-none');
+            }
+          })
+          .catch(function(){});
+      }
+    } catch(e) {}
+  })();
+</script>

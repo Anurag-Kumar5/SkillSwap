@@ -1,0 +1,151 @@
+/* ============================================================
+   SKILLSWAP — Responsive
+   All @media queries in one place
+   ============================================================ */
+
+/* ── Tablet (≤ 768px) ────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Typography */
+  h1 { font-size: var(--text-3xl); }
+  h2 { font-size: var(--text-2xl); }
+
+  .hero-title { font-size: var(--text-3xl); }
+  .hero-subtitle { font-size: var(--text-base); }
+  .section-title { font-size: var(--text-2xl); }
+  .cta-section .cta-title { font-size: var(--text-2xl); }
+
+  /* Hero landing */
+  .hero-landing { padding: var(--space-12) 0; }
+
+  /* Stats bar */
+  .stats-bar {
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    padding: var(--space-8) var(--space-4);
+  }
+  .stat-item { flex: 1; min-width: 120px; }
+
+  /* Footer grid */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+
+  /* Auth layout */
+  .auth-panel-left { display: none; }
+  .auth-panel-right { padding: var(--space-6); }
+  .auth-form-container { max-width: 100%; }
+
+  /* Profile */
+  .profile-stats {
+    gap: var(--space-4);
+    justify-content: center;
+  }
+
+  /* Admin */
+  .admin-layout { flex-direction: column; }
+  .admin-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-3) 0;
+    display: flex;
+    overflow-x: auto;
+  }
+  .admin-sidebar-link {
+    padding: var(--space-2) var(--space-4);
+    white-space: nowrap;
+  }
+  .admin-content { padding: var(--space-4); }
+
+  /* Cards grid */
+  .row-cols-md-3 > * { flex: 0 0 50%; max-width: 50%; }
+
+  /* User card */
+  .user-card-footer { flex-direction: column; }
+
+  /* Chat layout */
+  .chat-layout { flex-direction: column; }
+}
+
+/* ── Mobile (≤ 576px) ────────────────────────────────────── */
+@media (max-width: 576px) {
+  /* Container padding */
+  .page-container { padding: var(--space-5) var(--space-4); }
+  .card-body { padding: var(--space-4); }
+  .card-header { padding: var(--space-3) var(--space-4); }
+  .modal-body { padding: var(--space-4); }
+  .modal-header { padding: var(--space-4); }
+  .modal-footer { padding: var(--space-3) var(--space-4); }
+
+  /* Hero */
+  .hero-landing { padding: var(--space-10) 0; }
+  .hero-title { font-size: var(--text-2xl); }
+  .hero-subtitle { font-size: var(--text-sm); }
+
+  /* Profile */
+  .profile-header { padding: var(--space-6) 0; }
+  .profile-name { font-size: var(--text-2xl); }
+  .profile-stats { gap: var(--space-4); }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+  .footer-bottom { flex-direction: column; gap: var(--space-3); text-align: center; }
+
+  /* Cards */
+  .row-cols-md-3 > * { flex: 0 0 100%; max-width: 100%; }
+  .user-card { padding: var(--space-4); }
+
+  /* Buttons */
+  .btn-group-responsive { flex-direction: column; width: 100%; }
+  .btn-group-responsive .btn { width: 100%; justify-content: center; }
+
+  /* Step items */
+  .step-item { flex-direction: row; text-align: left; }
+
+  /* Stats bar */
+  .stats-bar { flex-direction: column; gap: var(--space-5); }
+
+  /* Nav height adjustment */
+  :root { --nav-height: 56px; }
+
+  /* Section padding */
+  .section { padding: var(--space-10) 0; }
+  .section-sm { padding: var(--space-8) 0; }
+
+  /* CTA section */
+  .cta-section { padding: var(--space-10) 0; }
+
+  /* Category cards grid */
+  .category-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Swap page */
+  .swap-exchange { flex-direction: column; text-align: center; }
+  .swap-exchange-arrow { transform: rotate(90deg); }
+
+  /* Chat */
+  .message { max-width: 88%; }
+  .call-controls { gap: var(--space-3); padding: var(--space-4); }
+  .call-btn { width: 44px; height: 44px; font-size: 1rem; }
+
+  /* Admin sidebar */
+  .admin-content { padding: var(--space-4) var(--space-3); }
+}
+
+/* ── Desktop (≥ 1200px) ──────────────────────────────────── */
+@media (min-width: 1200px) {
+  .hero-title { font-size: var(--text-6xl); }
+  .section-title { font-size: var(--text-4xl); }
+
+  /* Wide hero layout */
+  .hero-landing .row {
+    align-items: center;
+    min-height: 480px;
+  }
+}
+
+/* ── Print ───────────────────────────────────────────────── */
+@media print {
+  .ss-navbar, footer, .btn, .modal { display: none !important; }
+  body { background: white; color: black; }
+}

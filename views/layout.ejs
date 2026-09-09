@@ -1,0 +1,32 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const userId = '<%= user ? user._id : "" %>'; // Passed from EJS
+  
+  // Join user-specific room
+  if (userId) socket.emit('joinRoom', userId);
+  
+  // Listen for swap requests
+  socket.on('newSwapRequest', (data) => {
+    try {
+      if (window.bootstrap) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-bg-info border-0';
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = '<div class="d-flex">\
+          <div class="toast-body">' + (data.senderName || 'New swap request') + ': ' + (data.skillOffered || '') + ' ↔ ' + (data.skillRequested || '') + '</div>\
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>\
+        </div>';
+        container.appendChild(toast);
+        new bootstrap.Toast(toast, { delay: 5000 }).show();
+      }
+    } catch(e) {}
+  });
+</script>
+
+<!-- Toast container -->
+<div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100"></div>
+
+<!-- User data for JS (if needed) -->
+<div id="userData" data-user="<%= JSON.stringify(currentUser) %>" class="d-none"></div>

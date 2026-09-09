@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title>Edit Profile — SkillSwap</title>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="/">Home</a></span>
+          <span class="breadcrumb-item"><a href="/profile">Profile</a></span>
+          <span class="breadcrumb-item active">Edit Profile</span>
+        </div>
+        <h1 class="page-title">Edit Profile</h1>
+        <p class="page-subtitle">Update your information and showcase your best self.</p>
+      </div>
+    </div>
+
+    <div class="container fade-in" style="max-width: 760px; padding: var(--space-8) var(--space-6);">
+      <!-- Form action preserved exactly -->
+      <form action="/profile/edit" method="post">
+        <!-- ── Basic Information ── -->
+        <div class="card" style="margin-bottom: var(--space-4);">
+          <div class="card-header"><i class="bi bi-person-circle me-2"></i>Basic Information</div>
+          <div class="card-body" style="display: flex; flex-direction: column; gap: var(--space-5);">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label">Full Name <span style="color:var(--color-danger);">*</span></label>
+                <input type="text" class="form-control" name="name" value="<%= user.name %>" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Age</label>
+                <input type="number" class="form-control" name="age" value="<%= user.age || '' %>" min="13" max="120" placeholder="Your age">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Gender</label>
+                <select class="form-select" name="gender">
+                  <option value="prefer-not-to-say" <%= user.gender === 'prefer-not-to-say' ? 'selected' : '' %>>Prefer not to say</option>
+                  <option value="male"       <%= user.gender === 'male'       ? 'selected' : '' %>>Male</option>
+                  <option value="female"     <%= user.gender === 'female'     ? 'selected' : '' %>>Female</option>
+                  <option value="non-binary" <%= user.gender === 'non-binary' ? 'selected' : '' %>>Non-binary</option>
+                  <option value="other"      <%= user.gender === 'other'      ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-control" name="location" value="<%= user.location || '' %>" placeholder="City, Country">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Bio</label>
+                <textarea class="form-control" name="bio" rows="4" maxlength="500" placeholder="Tell others about yourself, your interests, and what you're passionate about..."><%= user.bio || '' %></textarea>
+                <div class="form-text">Maximum 500 characters.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Avatar ── -->
+        <div class="card" style="margin-bottom: var(--space-4);">
+          <div class="card-header"><i class="bi bi-image me-2"></i>Profile Photo</div>
+          <div class="card-body" style="display: flex; align-items: center; gap: var(--space-6);">
+            <img id="avatarPreview"
+                 src="<%= user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=2563EB&color=fff&size=128' %>"
+                 class="avatar avatar-3xl avatar-ring" alt="Avatar preview"
+                 onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(user.name) %>&background=2563EB&color=fff&size=128'">
+            <div style="flex: 1;">
+              <label class="form-label">Avatar URL</label>
+              <input type="url" class="form-control" name="avatar" id="avatarUrl"
+                     value="<%= user.avatar || '' %>"
+                     placeholder="https://example.com/photo.jpg"
+                     onchange="updateAvatarPreview()" oninput="updateAvatarPreview()">
+              <div class="form-text">Paste a URL to a public image. Preview updates automatically.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Social Links ── -->
+        <div class="card" style="margin-bottom: var(--space-4);">
+          <div class="card-header"><i class="bi bi-share me-2"></i>Social Links</div>
+          <div class="card-body">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-linkedin me-1"></i> LinkedIn</label>
+                <input type="url" class="form-control" name="linkedin"
+                       value="<%= user.socialLinks?.linkedin || '' %>"
+                       placeholder="https://linkedin.com/in/yourprofile">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-twitter-x me-1"></i> Twitter / X</label>
+                <input type="url" class="form-control" name="twitter"
+                       value="<%= user.socialLinks?.twitter || '' %>"
+                       placeholder="https://twitter.com/yourhandle">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-github me-1"></i> GitHub</label>
+                <input type="url" class="form-control" name="github"
+                       value="<%= user.socialLinks?.github || '' %>"
+                       placeholder="https://github.com/yourusername">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-instagram me-1"></i> Instagram</label>
+                <input type="url" class="form-control" name="instagram"
+                       value="<%= user.socialLinks?.instagram || '' %>"
+                       placeholder="https://instagram.com/yourhandle">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Interests ── -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-header"><i class="bi bi-heart me-2"></i>Interests</div>
+          <div class="card-body">
+            <label class="form-label">Your Interests</label>
+            <input type="text" class="form-control" name="interests"
+                   value="<%= user.interests ? user.interests.join(', ') : '' %>"
+                   placeholder="Technology, Music, Art, Cooking, Travel...">
+            <div class="form-text">Separate multiple interests with commas.</div>
+          </div>
+        </div>
+
+        <!-- ── Actions ── -->
+        <div style="display: flex; gap: var(--space-3);">
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-check-lg me-1"></i>Save Changes
+          </button>
+          <a href="/profile" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    // Avatar preview (preserved from original)
+    function updateAvatarPreview() {
+      const avatarUrl = document.getElementById('avatarUrl').value;
+      const avatarPreview = document.getElementById('avatarPreview');
+      if (avatarUrl) {
+        avatarPreview.src = avatarUrl;
+        avatarPreview.onerror = function() {
+          this.src = 'https://ui-avatars.com/api/?name=<%= encodeURIComponent(user.name) %>&background=2563EB&color=fff&size=128';
+        };
+      } else {
+        avatarPreview.src = 'https://ui-avatars.com/api/?name=<%= encodeURIComponent(user.name) %>&background=2563EB&color=fff&size=128';
+      }
+    }
+    document.getElementById('avatarUrl').addEventListener('input', updateAvatarPreview);
+  </script>
+</body>
+</html>
