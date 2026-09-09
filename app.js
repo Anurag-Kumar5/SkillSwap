@@ -149,7 +149,8 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL || "/auth/google/callback",
-  passReqToCallback: true
+  passReqToCallback: true,
+  proxy: true
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
     if (!profile.emails?.[0]?.value) {
