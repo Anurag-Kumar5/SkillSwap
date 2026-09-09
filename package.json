@@ -7,12 +7,19 @@
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-  "keywords": ["skillswap", "nodejs", "express", "mongoose", "ejs"],
+  "keywords": [
+    "skillswap",
+    "nodejs",
+    "express",
+    "mongoose",
+    "ejs"
+  ],
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "connect-flash": "^0.1.1",
+    "connect-mongo": "^6.0.0",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
