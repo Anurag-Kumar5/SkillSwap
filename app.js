@@ -20,6 +20,7 @@ const swapRoutes = require('./routes/swaps');
 const methodOverride = require('method-override');
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);           
 const io = new Server(server);                     
 
